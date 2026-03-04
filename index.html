@@ -335,11 +335,16 @@
     <section id="Model" class="content-section">
         <h2>IR-GeoDiff</h2>
         <img id="model-image" src="fig/model_horizontal.png" alt="Model">
+        <p>
+            Spectral features $S$ are first extracted by a Transformer-based spectral classifier $\tau_\theta$. 
+            Then, the encoder $\mathcal{E}_\phi$ maps molecular geometries into a latent representation $\mathbf{z}_\mathrm{x}$, which is perturbed through a forward diffusion process and denoised by an equivariant network $\epsilon_\theta$ conditioned on the spectral features which are injected into node and edge representations via cross-attention. 
+            Finally, the decoder $\mathcal{D}_\delta$ reconstructs the 3D geometry $G$ from the denoised latent representation $\mathbf{z}_\mathrm{x}^T$.
+        </p>
     </section>
 
     <section id="Evaluation Metrics" class="content-section">
         <h2>Evaluation Metrics</h2>
-        <p> The goal for IR-GeoDiff is to recover molecular structures consistent with a given IR spectrum. Here, we evaluate the model's performance from both structural and spectral perspectives.</p>
+        <p> The goal for IR-GeoDiff is to recover molecular structures consistent with a given IR spectrum. Here, we evaluate the recovery performance of IR-GeoDiff from both structural and spectral perspectives.</p>
         <ul>
             <li>Structural Similarity: We measure chemical graphsimilarity (sim<sub>G</sub>) between the recovered and reference molecular structures, defined as the Tanimoto similarity between Morgan fingerprints computed
                 using RDKit.</li>
@@ -405,9 +410,6 @@
             <div id="attention-vib-mol" class="viewer"></div>
             <img id="spec-edge-ca" class="ca-img", src="attention/attn_map_mol1.png"></div>
         </div>
-        
-        
-
     </section>
     
     <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
@@ -486,6 +488,15 @@
                 img.src = imgFile;
             }
         }
+    </script>
+
+    <script>
+        MathJax = {
+        tex: {inlineMath: [['\\(','\\)'], ['$', '$']]}
+        };
+    </script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
     </script>
 </body>
 </html>
