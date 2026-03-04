@@ -192,9 +192,14 @@
             display: flex;
             flex-direction: row;
             gap: 10px;
-            /* justify-content: right; */
             justify-content: center;
             margin-bottom: 0;
+        }
+        .btn {
+            padding: 3px 16px;   /* 上下高度 左右宽度 */
+            font-size: 11px;
+            border-radius: 6px;
+            background: #f0ebeb;
         }
   
         .ir-img {
@@ -234,6 +239,18 @@
             font-size: 15px;
             color: #444;
             margin: 0;
+        }
+        .ca-grid-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .ca-img {
+            width: 100%;
+            object-fit: contain;
+            background: #fafafa;
         }
 
     </style>
@@ -320,18 +337,26 @@
         <img id="model-image" src="fig/model_horizontal.png" alt="Model">
     </section>
 
+    <section id="Evaluation Metrics" class="content-section">
+        <h2>Evaluation Metrics</h2>
+        <p> The goal for IR-GeoDiff is to recover molecular structures consistent with a given IR spectrum. Here, we evaluate the model's performance from both structural and spectral perspectives.</p>
+        <ul>
+            <li>Structural Similarity: We measure chemical graphsimilarity (sim<sub>G</sub>) between the recovered and reference molecular structures, defined as the Tanimoto similarity between Morgan fingerprints computed
+                using RDKit.</li>
+            <li>Spectral Simlarity: We adopt the Spectral Information Similarity (SIS) metric  proposed by <a href="https://pubs.acs.org/doi/10.1021/acs.jcim.1c00055">McGill et al.</a>, which quantifies the similarity between
+                the input spectrum and the spectrum of the recovered molecule. We further define SIS<sup>*</sup>, which computes the SIS score restricted to the functional group region (1,350 - 4,000 cm<sup>-1</sup>).</li>
+        </ul>
     
-    <section id="Experiment" class="content-section">
-        <h2>Examples</h2>
+        <h3>Examples</h3>
         <div class="exp-block">
             <div class="exp-head-row">
                 <div class="exp-ref-title">Reference Molecule</div>
                 <div class="exp-right-head">
                     <div id="exp-buttons-mol1" class="exp-buttons-row">
-                        <button onclick="loadExample('viewer-mol1', 'examples/mol_1_1.xyz', 'ir-mol1', 'examples/mol_1_ir1.png', 'sim-mol1', '1.00', '0.974', '0.969')">Sample 1</button>
-                        <button onclick="loadExample('viewer-mol1', 'examples/mol_1_2.xyz', 'ir-mol1', 'examples/mol_1_ir2.png', 'sim-mol1', '0.812', '0.850', '0.889')">Sample 2</button>
-                        <button onclick="loadExample('viewer-mol1', 'examples/mol_1_3.xyz', 'ir-mol1', 'examples/mol_1_ir3.png', 'sim-mol1', '0.647', '0.840', '0.889')">Sample 3</button>
-                        <button onclick="loadExample('viewer-mol1', 'examples/mol_1_4.xyz', 'ir-mol1', 'examples/mol_1_ir4.png', 'sim-mol1', '0.611', '0.822', '0.851')">Sample 4</button>
+                        <button class="btn" onclick="loadExample('viewer-mol1', 'examples/mol_1_1.xyz', 'ir-mol1', 'examples/mol_1_ir1.png', 'sim-mol1', '1.00', '0.974', '0.969')" >Sample 1</button>
+                        <button class="btn" onclick="loadExample('viewer-mol1', 'examples/mol_1_2.xyz', 'ir-mol1', 'examples/mol_1_ir2.png', 'sim-mol1', '0.812', '0.850', '0.889')" >Sample 2</button>
+                        <button class="btn" onclick="loadExample('viewer-mol1', 'examples/mol_1_3.xyz', 'ir-mol1', 'examples/mol_1_ir3.png', 'sim-mol1', '0.647', '0.840', '0.889')" >Sample 3</button>
+                        <button class="btn" onclick="loadExample('viewer-mol1', 'examples/mol_1_4.xyz', 'ir-mol1', 'examples/mol_1_ir4.png', 'sim-mol1', '0.611', '0.822', '0.851')" >Sample 4</button>
                     </div>
                     <div id="sim-mol1" class="exp-similarity"><b>sim<sub>G</sub></b>: 1.00, <b>SIS</b>: 0.974, <b>SIS<sup>*</sup></b>: 0.969</div>
                 </div>
@@ -347,10 +372,10 @@
                 <div class="exp-ref-title">Reference Molecule</div>
                 <div class="exp-right-head">
                     <div id="exp-buttons-mol2" class="exp-buttons-row">
-                        <button onclick="loadExample('viewer-mol2', 'examples/mol_2_1.xyz', 'ir-mol2', 'examples/mol_2_ir1.png', 'sim-mol2', '1.00', '0.985', '0.984')">Sample 1</button>
-                        <button onclick="loadExample('viewer-mol2', 'examples/mol_2_2.xyz', 'ir-mol2', 'examples/mol_2_ir2.png', 'sim-mol2', '0.800', '0.830', '0.845')">Sample 2</button>
-                        <button onclick="loadExample('viewer-mol2', 'examples/mol_2_3.xyz', 'ir-mol2', 'examples/mol_2_ir3.png', 'sim-mol2', '0.687', '0.693', '0.754')">Sample 3</button>
-                        <button onclick="loadExample('viewer-mol2', 'examples/mol_2_4.xyz', 'ir-mol2', 'examples/mol_2_ir4.png', 'sim-mol2', '0.647', '0.682', '0.801')">Sample 4</button>
+                        <button class="btn" onclick="loadExample('viewer-mol2', 'examples/mol_2_1.xyz', 'ir-mol2', 'examples/mol_2_ir1.png', 'sim-mol2', '1.00', '0.985', '0.984')">Sample 1</button>
+                        <button class="btn" onclick="loadExample('viewer-mol2', 'examples/mol_2_2.xyz', 'ir-mol2', 'examples/mol_2_ir2.png', 'sim-mol2', '0.800', '0.830', '0.845')">Sample 2</button>
+                        <button class="btn" onclick="loadExample('viewer-mol2', 'examples/mol_2_3.xyz', 'ir-mol2', 'examples/mol_2_ir3.png', 'sim-mol2', '0.687', '0.693', '0.754')">Sample 3</button>
+                        <button class="btn" onclick="loadExample('viewer-mol2', 'examples/mol_2_4.xyz', 'ir-mol2', 'examples/mol_2_ir4.png', 'sim-mol2', '0.647', '0.682', '0.801')">Sample 4</button>
                     </div>
                     <div id="sim-mol2" class="exp-similarity"><b>sim<sub>G</sub></b>: 1.00, <b>SIS</b>: 0.985, <b>SIS<sup>*</sup></b>: 0.984</div>
                 </div>
@@ -366,17 +391,20 @@
         <h2>Attention-based Analysis</h2>
         <p>
             We further investigate how the proposed model works.
-            We find that the model is able to focus on spectral regions associated with characteristic functional groups.
+            We find that both spectral-edge cross-attention module and atom-edge cross-attention module with the model are able to focus on spectral regions associated with characteristic functional groups.
             This behaviour qualitatively resembles how chemists interpret IR spectra.
         </p>
 
         <div id="ca-buttons-row" class="exp-buttons-row">
-            <button onclick="loadVibMol('attention-vib-mol', 'attention/mol1_CN.xyz')">Molecule 1</button>
-            <button onclick="loadVibMol('attention-vib-mol', 'attention/mol2_OH.xyz')">Molecule 2</button>
-            <button onclick="loadVibMol('attention-vib-mol', 'attention/mol3_CN.xyz')">Molecule 3a</button>
-            <button onclick="loadVibMol('attention-vib-mol', 'attention/mol3_OH.xyz')">Molecule 3b</button>
+            <button class="btn" onclick="loadVibMol('attention-vib-mol', 'attention/mol1_CN.xyz', 'spec-edge-ca', 'attention/attn_map_mol1.png')">Molecule a</button>
+            <button class="btn" onclick="loadVibMol('attention-vib-mol', 'attention/mol2_OH.xyz', 'spec-edge-ca', 'attention/attn_map_mol2.png')">Molecule b</button>
+            <button class="btn" onclick="loadVibMol('attention-vib-mol', 'attention/mol3_CN.xyz', 'spec-edge-ca', 'attention/attn_map_mol3a.png')">Molecule c1</button>
+            <button class="btn" onclick="loadVibMol('attention-vib-mol', 'attention/mol3_OH.xyz', 'spec-edge-ca', 'attention/attn_map_mol3b.png')">Molecule c2</button>
         </div>
-        <div id="attention-vib-mol" class="viewer"></div>
+        <div id="ca-spec-edge-atom-row" class="ca-grid-row">
+            <div id="attention-vib-mol" class="viewer"></div>
+            <img id="spec-edge-ca" class="ca-img", src="attention/attn_map_mol1.png"></div>
+        </div>
         
         
 
@@ -435,7 +463,7 @@
                 }
             }
         
-        function loadVibMol(divID, filename){
+        function loadVibMol(divID, filename, imgID, imgFile){
             const viewer = viewers[divID];
             fetch(filename)
             .then(r => r.text())
@@ -452,8 +480,12 @@
                 viewer.zoomTo();
                 viewer.render();
             });
+            
+            if (imgID) {
+                const img = document.getElementById(imgID);
+                img.src = imgFile;
+            }
         }
-        
     </script>
 </body>
 </html>
