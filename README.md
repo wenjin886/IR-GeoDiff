@@ -9,3 +9,5 @@ Yet, no existing model has explored the distribution of 3D molecular geometries 
 In this work, we introduce **IR-GeoDiff**, a latent diffusion model that recovers 3D molecular geometries from IR spectra by integrating spectral information into both node and edge representations of molecular structures.
 We evaluate IR-GeoDiff from both spectral and structural perspectives, demonstrating its ability to recover the molecular distribution corresponding to a given IR spectrum. 
 Furthermore, an attention-based analysis reveals that the model’s interpretation of IR spectra aligns with quantum mechanical principles of molecular vibrations.
+
+> Code will be released upon acceptance.
