@@ -1,4 +1,4 @@
-Latent Diffusion-Based 3D Molecular Recovery from Vibrational Spectra
+# Latent Diffusion-Based 3D Molecular Recovery from Vibrational Spectra
 > Code will be released upon acceptance.
 
 ## Abstract
