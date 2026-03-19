@@ -1,5 +1,5 @@
-# Latent-Diffusion-Based-3D-Molecular-Recovery-from-Vibrational-Spectra
-Scripts of paper: Latent Diffusion-Based 3D Molecular Recovery from Vibrational Spectra
+Latent Diffusion-Based 3D Molecular Recovery from Vibrational Spectra
+> Code will be released upon acceptance.
 
 ## Abstract
 Infrared (IR) spectroscopy, a type of vibrational spectroscopy, is widely used for molecular structure determination and provides critical structural information for chemists. 
@@ -10,4 +10,4 @@ In this work, we introduce **IR-GeoDiff**, a latent diffusion model that recover
 We evaluate IR-GeoDiff from both spectral and structural perspectives, demonstrating its ability to recover the molecular distribution corresponding to a given IR spectrum. 
 Furthermore, an attention-based analysis reveals that the model’s interpretation of IR spectra aligns with quantum mechanical principles of molecular vibrations.
 
-> Code will be released upon acceptance.
+
