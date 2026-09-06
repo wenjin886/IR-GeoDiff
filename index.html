@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Latent Diffusion-Based 3D Molecular Recovery from Vibrational Spectra</title>
+    <title>Latent Diffusion-Based 3D Molecular Recovery from Infrared Spectra</title>
     <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
     <!-- FontAwesome (GitHub 图标) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -280,6 +280,58 @@
             justify-self: center; 
         }
 
+        /* Poster & Award */
+        .award-row {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 50px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .award-image img {
+            display: block;
+            width: 85%;
+            max-width: 420px;
+            margin: auto;
+            border-radius: 8px;
+        }
+
+        .award-text {
+            text-align: left;
+            align-self: center;
+        }
+
+        .award-text h3 {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .award-text p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #474747;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 700px) {
+            .award-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .award-text {
+                text-align: center;
+            }
+        }
+
+        .award-highlight {
+            font-weight: 900;
+            color: #7a2f5b;
+        }
+                
+
     </style>
 </head>
 <body>
@@ -313,6 +365,11 @@
             <a class="button" href="https://arxiv.org/abs/2603.06113" target="_blank">
                 <i class="fa-solid fa-file-pdf"></i> Paper
             </a>
+
+            <!-- Poster -->
+            <a class="button" href="materials/poster_award/poster.pdf" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i> Poster
+            </a>
         </div>
     </div>
     
@@ -328,6 +385,35 @@
                 alt="Recovered Molecule">
         </div>
     </div>  
+
+    <section id="award" class="content-section">
+        <h2>Award</h2>
+    
+        <div class="award-row">
+            <div class="award-image">
+                <img
+                    src="materials/poster_award/award.jpg"
+                    alt="Best Poster Prize at Structure 2026"
+                >
+            </div>
+    
+            <div class="award-text">
+                <h3>🏆 Best Poster Prize</h3>
+    
+                <p>
+                    Awarded at
+                    <span class="award-highlight">Structure 2026: Automated Interpretation of Spectroscopy Data</span>,
+                    an event organised by the
+                    <span class="award-highlight">Royal Society of Chemistry (RSC)</span>
+                    NMR Discussion Group & Molecular Spectroscopy Group.
+                </p>
+    
+                <p>
+                    AstraZeneca, Cambridge, UK
+                </p>
+            </div>
+        </div>
+    </section>
 
     <section id="abstract">
         <h2>Abstract</h2>
