@@ -95,7 +95,6 @@ Sampling 3D molecular structures from IR spectra using the trained diffusion mod
 cd IR-GeoDiff
 
 python -m src.sample_diff \
-    --use_full_cls \
     --save_name check_sample \
     --data_dir ../data/qm9s/ \
     --diff_dir_path ../exp/exp_diff/qm9s_diff \
@@ -109,7 +108,7 @@ python -m src.sample_diff \
 
 **Step 1**: Calculating graph similarity
 ```
-python -m src.code.sample_result_analysis.structural_analysis \
+python -m src.code.analysis.structural_analysis \
     --log_name graph_sim.log \
     --test_data ../data/qm9s/fg20_qm9s_final_test_1000.pkl \
     --sample_file path/to/sample_final_xxx.npz \
@@ -118,7 +117,7 @@ python -m src.code.sample_result_analysis.structural_analysis \
 
 **Step 2**: Preparing Gaussian calculation
 ```
-python -m src.code.sample_result_analysis.generate_gaussian_input \
+python -m src.code.analysis.generate_gaussian_input \
     --data_file path/to/sample_final_xxx.npz \
     --structral_analysis_result path/to/graph_sim.csv \
     --save_dir ../exp/exp_diff/qm9s_diff/gjf_input \
@@ -139,7 +138,7 @@ python -m src.code.analysis.spec_analysis_match \
     --num_mol 1000
 
 python -m src.code.analysis.spec_analysis_match \
-    --log_file_name  spec_sim.log \
+    --log_file_name spec_sim.log \
     --cal_sis_result path/to/ir_computed_sis_1000.pkl \
 ```
 

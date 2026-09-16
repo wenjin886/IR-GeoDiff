@@ -152,8 +152,8 @@ def main(args):
     diff_model, diff_checkpoint_name, diff_args = load_diffusion(diff_dir_path=args.diff_dir_path, 
                                                                  device=device,
                                                                  last_checkpoint=args.last_checkpoint,
-                                                                 checkpoint=args.checkpoint,
-                                                                 use_full_cls=args.use_full_cls)
+                                                                 checkpoint=args.checkpoint)
+                                                                #  use_full_cls=args.use_full_cls)
     diff_model = diff_model.to(device)
     diff_model.eval()
 
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument("--save_name", type=str, default=None)
-    parser.add_argument("--use_full_cls", action="store_true")
+    # parser.add_argument("--use_full_cls", action="store_true")
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
     parser.add_argument("--diff_dir_path", type=Path, default=True)

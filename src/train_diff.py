@@ -131,7 +131,6 @@ def main(args):
         fast_dev_run = 1 # run 1 batch through the trainer to see if there are any bugs
     else:
         wandb_logger = WandbLogger(
-            # project="IR-Geo-Latent-Diff",
             project=args.wandb_project,
             name=exp_name,
             save_dir=exp_save_path
@@ -155,7 +154,6 @@ def main(args):
                         gradient_clip_algorithm=None,
                         accumulate_grad_batches=args.accumulate_grad_batches
                         )
-    raise ValueError("Stop")
     if args.resume:
         trainer.fit(model=model, 
                     ckpt_path=args.diff_checkpoint,

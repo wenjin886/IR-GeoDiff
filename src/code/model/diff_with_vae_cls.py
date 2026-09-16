@@ -274,12 +274,12 @@ class EnLatentPosDiffusion(L.LightningModule):
             # assert spec_fg_cls is not None, "Please check the input of spec_fg_cls which should be a loaded model."
             assert getattr(self.vae, "use_spec_cls_model", True), "Please check the input of vae model which should have a full spec_cls_model."
              
-            if fix_spec_fg_cls:
-                self.cls_weight = 0
-                for param in self.vae.spec_cls_model.parameters():
-                    param.requires_grad = False
-                
-            print(f"diff | fix_spec_fg_cls: {fix_spec_fg_cls} | cls_weight: {self.cls_weight}")
+        if fix_spec_fg_cls:
+            self.cls_weight = 0
+            for param in self.vae.spec_cls_model.parameters():
+                param.requires_grad = False
+            
+        print(f"diff | fix_spec_fg_cls: {fix_spec_fg_cls} | cls_weight: {self.cls_weight}")
         
 
         self.save_hyperparameters(ignore=['vae', 'dynamics']) 

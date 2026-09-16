@@ -18,7 +18,7 @@ import os.path as osp
 import pickle
 from pprint import pprint
 
-def load_diffusion(diff_dir_path, device, last_checkpoint=False, checkpoint=None, use_full_cls=False):
+def load_diffusion(diff_dir_path, device, last_checkpoint=False, checkpoint=None): #, use_full_cls=False):
     assert osp.exists(diff_dir_path), f"Path do not exist: f{diff_dir_path}"
     with open(osp.join(diff_dir_path, 'args.pickle'), 'rb') as f:
         diff_args = pickle.load(f)
@@ -34,11 +34,11 @@ def load_diffusion(diff_dir_path, device, last_checkpoint=False, checkpoint=None
     checkpoint = osp.join(diff_dir_path, checkpoint)
     diff_checkpoint_name = osp.basename(checkpoint)
     print(f"Loading: {checkpoint}")
-    if use_full_cls:
-        diff_model = get_diffusion_model_cls(args=diff_args, device=device, 
-                                        ema_callback=ema_callback,
-                                        diff_checkpoint=checkpoint,
-                                        )
+    # if use_full_cls:
+    diff_model = get_diffusion_model_cls(args=diff_args, device=device, 
+                                    ema_callback=ema_callback,
+                                    diff_checkpoint=checkpoint,
+                                    )
   
     return diff_model, diff_checkpoint_name, diff_args
 

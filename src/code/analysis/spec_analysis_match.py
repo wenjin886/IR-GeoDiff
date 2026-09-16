@@ -265,7 +265,8 @@ def main_ir_sis(args):
         is_smi_matched = [None]*2 + sample_result[sample_result["smi_tgt"]==smi_tgt]["is_smi_matched"].to_list()
 
         
-        if 'Al' in smi_origin:
+        # if 'Al' in smi_origin:
+        if 'Al' in smi_tgt:
             smi_tgt = get_clean_smi(Chem.MolFromSmiles(smi_tgt), ignore_metal_explicit_H=True)
 
 
@@ -275,12 +276,13 @@ def main_ir_sis(args):
         
         conv_matrix = make_conv_matrix(frequencies=x_values, std_dev=10)
         
-        if args.only_stable_logs:
-            dir_i = os.path.join(ir_compute_dir, f"{i}_all")
-        else:
-            dir_i = os.path.join(ir_compute_dir, f"mol_{i}")
+        # if args.only_stable_logs:
+        #     dir_i = os.path.join(ir_compute_dir, f"{i}_all")
+        # else:
+        dir_i = os.path.join(ir_compute_dir, f"mol_{i}")
 
-        if (not (args.only_stable_logs or args.all_stable)):
+        # if (not (args.only_stable_logs or args.all_stable)):
+        if not args.all_stable:
             dir_i_tgt = os.path.join(dir_i, "tgt")
             log_file_tgt = find_log_file(dir_i_tgt)
             if log_file_tgt is not None:
@@ -292,9 +294,9 @@ def main_ir_sis(args):
                
                   
         for j in tqdm(range(num_sample)):
-            if args.only_stable_logs:
-                log_file_j = os.path.join(dir_i, f"mol_{i}_sample_{j}.log")
-                if not os.path.exists(log_file_j): log_file_j = None
+            # if args.only_stable_logs:
+            #     log_file_j = os.path.join(dir_i, f"mol_{i}_sample_{j}.log")
+            #     if not os.path.exists(log_file_j): log_file_j = None
             if args.all_stable:
                 log_file_j = None
                 if i not in mol_files: continue
@@ -311,7 +313,8 @@ def main_ir_sis(args):
                 if type(smi_sample[j]) != str: 
                     print(f"mol {i}, sample {j} is invalid")
                     continue # invalid molecule
-                if type(stable_similarity[j+2]) is None: 
+                # if type(stable_similarity[j+2]) is None: 
+                if pd.isna(stable_similarity[j+2]):
                     print(f"mol {i}, sample {j} is unstable")
                     continue # unstable molecule
                 if not check_struc_match(smi_sample[j], log_file_j, bond_threshold):  
@@ -461,24 +464,24 @@ def analyze_sis(spec_sis_df, logger):
         "sis_sample_mean_stable": sis_sample_mean_stable, "sis_func_sample_mean_stable": sis_func_sample_mean_stable
     }
 
-def main_analyze_sis_report(args):
-    spec_sis_df = pd.read_pickle(args.cal_sis_result)
-    save_path = os.path.dirname(args.cal_sis_result)
+# def main_analyze_sis_report(args):
+#     spec_sis_df = pd.read_pickle(args.cal_sis_result)
+#     save_path = os.path.dirname(args.cal_sis_result)
     
-    if args.log_file_name == '': log_file_name='spectral_analysis.log'
-    elif '.log' not in args.log_file_name: log_file_name = args.log_file_name + '.log'
+#     if args.log_file_name == '': log_file_name='spectral_analysis.log'
+#     elif '.log' not in args.log_file_name: log_file_name = args.log_file_name + '.log'
 
-    log_file_name = os.path.join(save_path, log_file_name)
-    print(f"Log file: {log_file_name}")
-    logging.basicConfig(filename=log_file_name,
-                        format='%(asctime)s - %(levelname)s: %(message)s',
-                        level=logging.INFO)
-    logger = logging.getLogger(__name__)
-    logger.info(f"Analyzing sample results: {args.cal_sis_result}")
+#     log_file_name = os.path.join(save_path, log_file_name)
+#     print(f"Log file: {log_file_name}")
+#     logging.basicConfig(filename=log_file_name,
+#                         format='%(asctime)s - %(levelname)s: %(message)s',
+#                         level=logging.INFO)
+#     logger = logging.getLogger(__name__)
+#     logger.info(f"Analyzing sample results: {args.cal_sis_result}")
 
-    if type(args.num_mol) == int:
-        logger.info(f"Number of test data: {args.num_mol}")
-        spec_sis_df = spec_sis_df[spec_sis_df["mol_idx"].isin([i for i in range(args.num_mol)])]
+#     if type(args.num_mol) == int:
+#         logger.info(f"Number of test data: {args.num_mol}")
+#         spec_sis_df = spec_sis_df[spec_sis_df["mol_idx"].isin([i for i in range(args.num_mol)])]
 
 
     
@@ -490,7 +493,7 @@ if __name__ == "__main__":
     
 
     parser.add_argument('--cal_sis', action="store_true")
-    parser.add_argument('--only_stable_logs', action="store_true")
+    # parser.add_argument('--only_stable_logs', action="store_true")
     parser.add_argument('--all_stable', action="store_true")
     parser.add_argument('--structral_analysis_result', type=str, help=".csv file")
     parser.add_argument('--ir_compute_dir', type=str, help="directory")
@@ -513,5 +516,6 @@ if __name__ == "__main__":
     if args.cal_sis:
         main_ir_sis(args)
     elif args.cal_sis_result != '':
-        main_analyze_sis_report(args)
+        # main_analyze_sis_report(args)
+        main_analyze_sis(args)
 
