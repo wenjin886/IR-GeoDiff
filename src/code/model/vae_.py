@@ -185,18 +185,7 @@ class EGNN_decoder_QM9(nn.Module):
         self.device_ = device
         self.n_dims = n_dims
         self._edges_dict = {}
-        # self.condition_time = condition_time
 
-    # def forward(self, t, xh, node_mask, edge_mask, context=None):
-    #     raise NotImplementedError
-
-    # def wrap_forward(self, node_mask, edge_mask, context):
-    #     def fwd(time, state):
-    #         return self._forward(time, state, node_mask, edge_mask, context)
-    #     return fwd
-
-    # def unwrap_forward(self):
-    #     return self._forward
 
     def forward(self, xh, node_mask, edge_mask, context=None):
         # print("vae decoder xh", xh.shape)
@@ -218,7 +207,6 @@ class EGNN_decoder_QM9(nn.Module):
             context = context.view(bs*n_nodes, self.context_node_nf)
             h = torch.cat([h, context], dim=1)
 
-        # print("vae decoder h", h.shape)
 
         h_final, x_final = self.egnn(h, x, edges, node_mask=node_mask, edge_mask=edge_mask)
         vel = x_final * node_mask  # This masking operation is redundant but just in case
@@ -237,7 +225,6 @@ class EGNN_decoder_QM9(nn.Module):
         if node_mask is not None:
             h_final = h_final * node_mask
         h_final = h_final.view(bs, n_nodes, -1)
-        # print("vae decoder vel", vel.shape)
 
         return vel, h_final
     

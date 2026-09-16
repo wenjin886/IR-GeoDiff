@@ -238,12 +238,6 @@ if __name__ == "__main__":
     parser.add_argument("--num_fg_cross_attn_layers", type=int, default=2)
     parser.add_argument("--spec_fg_cls_checkpoint", type=str)
  
-
-    # parser.add_argument('--CA_modified', action='store_true', 
-                        # help="modify egnn to satisfy equivariant and invariant, for rebuttal")
-
-    # diff_with_vae_cls
-    # parser.add_argument('--use_vae_spec_cls', action='store_true')
     parser.add_argument('--fix_spec_fg_cls', type=eval, default=True)
     parser.add_argument('--cls_weight', type=float, default=0)
 
@@ -301,7 +295,6 @@ if __name__ == "__main__":
     parser.add_argument('--augment_noise', type=float, default=0)
     parser.add_argument('--data_augmentation', type=eval, default=False)
     parser.add_argument('--precision', type=str, default='medium',choices=['medium', 'high'])
-    # parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--accumulate_grad_batches', type=int, default=1)
     args = parser.parse_args()
 

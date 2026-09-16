@@ -128,7 +128,6 @@ def main(args):
     elif device == "cpu":
         accelerator, devices ='cpu', "auto"
     
-    raise ValueError("STOP HERE")
     trainer = L.Trainer(accelerator=accelerator,
                         devices=devices,
                         max_epochs=args.n_epochs,

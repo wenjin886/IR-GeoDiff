@@ -20,20 +20,7 @@ import numpy as np
 
 
 
-def reverse_tensor(x):
-    return x[torch.arange(x.size(0) - 1, -1, -1)]
-
-def compute_target_class(spec_classifier, spectra, formula):
-    with torch.no_grad():
-        logits, _ = spec_classifier(spectra, formula.int())
-    target_class = (logits.sigmoid() > 0.5).float()
-    print("target_class", target_class)
-    return target_class
-
-
-
 def sample_chain(spec, one_hot, charges, node_mask, edge_mask, 
-                #  generative_model: EnLatentPosDiffusion,
                  generative_model,
                  formula_ids=None
                  ):
@@ -56,35 +43,6 @@ def sample_chain(spec, one_hot, charges, node_mask, edge_mask,
 
     return chain_bacth_first 
  
-
-# def sample(spec, one_hot, charges, node_mask, edge_mask, 
-#            generative_model,
-#            fix_noise: bool=False,
-#            sample_mode="sample", sample_times=1,
-#            formula_ids=None):
- 
-#     batch_size, max_n_nodes, _ = node_mask.shape
-#     h = {'categorical': one_hot, 'integer': charges}
-    
-#     x_all_sampled = torch.zeros(batch_size, sample_times, max_n_nodes, 3)
-#     for i in tqdm(range(sample_times), desc="sample_times"):
-#         x = generative_model.sample(spec=spec,
-#                                     h = h,
-#                                     n_samples=batch_size, 
-#                                     n_nodes=max_n_nodes,
-#                                     node_mask=node_mask,
-#                                     edge_mask=edge_mask,
-#                                     context=None,
-#                                     fix_noise=fix_noise,
-#                                     sample_mode=sample_mode,
-#                                     formula_ids=formula_ids
-#                                     )
-#         assert_correctly_masked(x, node_mask)
-#         assert_mean_zero_with_mask(x, node_mask)
-#         x_all_sampled[:, i, :, :] = x
-
-
-#     return x_all_sampled
 
 def sample_ff(spec, one_hot, charges, node_mask, edge_mask, 
            generative_model,
@@ -118,12 +76,6 @@ def sample_ff(spec, one_hot, charges, node_mask, edge_mask,
     return x_all_sampled
 
 
-
-def load_spec_cls(spec_cls_dir_path):
-    spec_cls_checkpoint, _ = get_checkpoint(spec_cls_dir_path, last_checkpoint=False)
-    print(f"Loading checkpoint from {spec_cls_checkpoint}")
-    spec_classifier = SpecFuncGroupsClsModel.load_from_checkpoint(spec_cls_checkpoint)
-    return spec_classifier
 
 def get_checkpoint_diff(exp_dir_path, last_checkpoint=False, checkpoint=None):
     files = os.listdir(exp_dir_path)
@@ -235,28 +187,24 @@ def main(args):
        
 
         if args.sample_chain:
-            x = sample_chain(spec, one_hot.to(device, dtype), charges.to(device, dtype),
-                                               node_mask, edge_mask, 
-                                               generative_model=diff_model.to(device), 
-                                               formula_ids=formula
-                                               )
+            x = sample_chain(
+                spec, 
+                one_hot.to(device, dtype), 
+                charges.to(device, dtype),
+                node_mask, edge_mask, 
+                generative_model=diff_model.to(device), 
+                formula_ids=formula)
                                  
         else:
-            # if formula is None:
-            #     x = sample(spec, one_hot.to(device, dtype), charges.to(device, dtype),
-            #                                 node_mask, edge_mask, 
-            #                                 generative_model=diff_model.to(device), 
-            #                                 fix_noise=False,
-            #                                 sample_mode=args.sample_mode,
-            #                                 sample_times=args.sample_times)
-            # else:
-            x = sample_ff(spec, one_hot.to(device, dtype), charges.to(device, dtype),
-                                        node_mask, edge_mask, 
-                                        generative_model=diff_model.to(device), 
-                                        fix_noise=False,
-                                        sample_mode=args.sample_mode,
-                                        sample_times=args.sample_times,
-                                        formula_ids=formula)
+            x = sample_ff(
+                spec, one_hot.to(device, dtype), 
+                charges.to(device, dtype),
+                node_mask, edge_mask, 
+                generative_model=diff_model.to(device), 
+                fix_noise=False,
+                sample_mode=args.sample_mode,
+                sample_times=args.sample_times,
+                formula_ids=formula)
         
                                         
         node_mask_list.append(node_mask.squeeze(2).cpu().numpy())
@@ -309,11 +257,10 @@ if __name__ == "__main__":
     parser.add_argument("--save_name", type=str, default=None)
     parser.add_argument("--use_full_cls", action="store_true")
     parser.add_argument('--data_dir', type=str, required=True)
-    parser.add_argument("--dataset", choices=["qm9s","fg26", "qme14s"], required=True)
+    parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
     parser.add_argument("--diff_dir_path", type=Path, default=True)
     parser.add_argument("--last_checkpoint", action="store_true")
     parser.add_argument("--checkpoint", type=str)
-    # parser.add_argument("--diff_model", type=str, default="pos", choices=["pos", "all"])
     parser.add_argument('--test_sample', action="store_true",
                         help="If True, only sample one batch.")
     parser.add_argument('--batch_size', type=int, default=128)

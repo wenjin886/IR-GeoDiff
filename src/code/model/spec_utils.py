@@ -1,7 +1,6 @@
 
 import torch
 import torch.nn as nn
-# import torch.nn.functional as F
 import math
 import copy
 
@@ -49,19 +48,15 @@ class EmbedPatchAttention(nn.Module):
         self.embed = Embeddings(d_model, src_vocab)
         self.patch = nn.Linear(patch_len*d_model, d_model)
         self.attention = MultiHeadedAttention(h=h, d_model=d_model)
-        # self.attention = nn.MultiheadAttention(embed_dim=d_model, num_heads=h, batch_first=True)
-        
+      
     def forward(self, spec): #[batch_size, spec_len]
         batch_size = spec.shape[0]
 
         spec = self.embed(spec.to(torch.int)).squeeze(1) #[batch_size, spec_len, d_model]
-        # print(spec.shape)
 
         spec = spec.view(batch_size, -1, self.patch_len, self.d_model) #[batch_size, spec_len/patch_size, patch_size, d_model]
         spec = spec.view(-1, self.patch_len, self.d_model) #[batch_size*(spec_len/patch_size), patch_size, d_model]
         spec = self.attention(spec, spec, spec)
-        # print(spec)
-        # print(spec.shape)
 
 
         spec = spec.view(batch_size, -1, self.patch_len, self.d_model) #[batch_size, spec_len/patch_size, patch_size, d_model]
@@ -182,7 +177,6 @@ class DecoderLayer(nn.Module):
         self.self_attn = self_attn
         self.src_attn = src_attn
         self.feed_forward = feed_forward
-        # self.sublayer = clones(SublayerConnection(size, dropout), 3)
 
         self.use_self_attn = False
         if self_attn is not None:
@@ -195,9 +189,6 @@ class DecoderLayer(nn.Module):
     def forward(self, x, memory, src_mask, tgt_mask):
         "Follow Figure 1 (right) for connections."
         m = memory
-        # x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, tgt_mask))
-        # x = self.sublayer[1](x, lambda x: self.src_attn(x, m, m, src_mask))
-        # return self.sublayer[2](x, self.feed_forward)
         if self.use_self_attn:
             x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, tgt_mask))
             x = self.sublayer[1](x, lambda x: self.src_attn(x, m, m, src_mask))

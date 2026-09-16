@@ -6,8 +6,8 @@ from .code.dataset.dataset_dataloader import (prep_ir_geo_dataset,
                                          qme14s_dataset_collate_fn,
                                          )
 
-from .code.model.train_utils import EMA
 from .code.get_model import get_vae_model_cls
+from .code.model.train_utils import EMACallback
 
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
@@ -25,26 +25,6 @@ from pprint import pprint
 def get_formatted_exp_name(exp_name):
     formatted_time = datetime.now().strftime("%H-%M-%m-%d-%Y")
     return f"{exp_name}_{formatted_time}"
-
-class EMACallback(L.Callback):
-    def __init__(self, ema_decay=0.99):
-        super().__init__()
-        self.ema_decay = ema_decay
-        self.ema = None
-        self.ema_model = None
-    
-    def on_train_start(self, trainer, pl_module):
-        # Initialize model copy for exponential moving average of params.
-        self.ema_model = copy.deepcopy(pl_module)
-        self.ema = EMA(beta=self.ema_decay)
-        
-        for param in self.ema_model.parameters():
-            param.requires_grad = False  # freeze EMA model
-
-    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
-        # Update EMA model
-        self.ema.update_model_average(self.ema_model, pl_module)
-
 
 def main(args):
     pprint(vars(args))
@@ -124,7 +104,6 @@ def main(args):
     # else:
         # model = get_vae_model_ff(args, device, total_steps, ema_callback)
     
-    raise ValueError("STOP HERE")
 
     trainer = L.Trainer(accelerator='gpu',
                         devices=1,

@@ -51,11 +51,9 @@ def main(args):
     else:
         log_save_path = args.cls_dir_path
     print(f"log_save_path: {log_save_path}")
-    raise NotImplementedError("Please specify log_save_dir to save the evaluation log.")
     log_save_path = osp.join(log_save_path, f"{checkpoint_name.split('.')[0]}_eval.log")
 
-    logging.basicConfig(filename=log_save_path,  #
-    # osp.join(args.cls_dir_path, f"{checkpoint_name.split('.')[0]}_eval.log"),
+    logging.basicConfig(filename=log_save_path,  
                         format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -69,7 +67,6 @@ def main(args):
     torch.set_float32_matmul_precision(args.precision)
 
 
-    # dataset = prep_qm9s_dataset(args.data_dir)
     dataset = prep_ir_geo_dataset(args.data_dir, args.dataset)
 
     test_dataset = dataset["test"]
@@ -96,8 +93,10 @@ def main(args):
     
     classifier.to(device).eval() 
     dtype = torch.float32
-    acc_per_fg = MultilabelAccuracy(num_labels=args.num_fg_cls, average="none").to(device)
-    f1_per_fg = MultilabelF1Score(num_labels=args.num_fg_cls, average="none").to(device)
+    acc_per_fg = MultilabelAccuracy(
+        num_labels=args.num_fg_cls, average="none").to(device)
+    f1_per_fg = MultilabelF1Score(
+        num_labels=args.num_fg_cls, average="none").to(device)
 
     n_test_data = 0
     cls_acc = torch.zeros(args.num_fg_cls, ).to(device)
@@ -108,31 +107,11 @@ def main(args):
         fg_onehot = batch["func_groups"].to(device)
         bs = fg_onehot.shape[0]
 
-        # if args.eval_mode == "spec":
         spectra = batch["spectra"].to(device)
         formula_ids = batch["formula"].to(device).int()
         with torch.no_grad():
             logits, _ = classifier(spectra, formula_ids)
             logits = logits.sigmoid()
-            
-
-        # elif args.eval_mode == "geo":
-            
-        #     spectra = batch["spectra"].to(device)
-        #     x = batch['positions'].to(device, dtype)
-        #     one_hot = batch['one_hot'].to(device, dtype)
-        #     charges = batch['charges'].to(device, dtype)
-
-        #     node_mask = batch['atom_mask'].to(device, dtype).unsqueeze(2)
-        #     edge_mask = batch['edge_mask'].to(device, dtype)
-
-        #     x = remove_mean_with_mask(x, node_mask)
-        #     check_mask_correct([x, one_hot, charges], node_mask)
-        #     assert_mean_zero_with_mask(x, node_mask)
-        #     h = {'categorical': one_hot, 'integer': charges}
-        #     z_x, z_h, _ = classifier.get_lantent_x_h(classifier.diff_model, spectra, x, h, node_mask, edge_mask)
-        #     with torch.no_grad():
-        #         logits = classifier(z_x, z_h, node_mask, edge_mask).sigmoid()
         
         n_test_data += bs
         
