@@ -119,10 +119,12 @@ def main(args):
     # cal total_step
     batches_per_epoch = len(train_loader)
     total_steps = int(args.n_epochs * batches_per_epoch)
-    if hasattr(args, "use_spec_cls") and args.use_spec_cls:
-        model = get_vae_model_cls(args, device, total_steps, ema_callback)
+    # if hasattr(args, "use_spec_cls") and args.use_spec_cls:
+    model = get_vae_model_cls(args, device, total_steps, ema_callback)
     # else:
         # model = get_vae_model_ff(args, device, total_steps, ema_callback)
+    
+    raise ValueError("STOP HERE")
 
     trainer = L.Trainer(accelerator='gpu',
                         devices=1,
@@ -130,7 +132,7 @@ def main(args):
                         fast_dev_run=fast_dev_run, 
                         callbacks=callbacks,
                         logger=wandb_logger,
-                        gradient_clip_val=0, # 禁用默认梯度裁剪
+                        gradient_clip_val=0, 
                         gradient_clip_algorithm=None,
                         accumulate_grad_batches=args.accumulate_grad_batches
                         )
@@ -148,7 +150,10 @@ def main(args):
                 model.load_state_dict(checkpoint["ema_state_dict"], strict=True)
             
             else:
-                exclude_names = ['spec_cls_model.fg_queries', 'spec_cls_model.formula_embed.0.lut.weight','h_embed.lut.weight']
+                exclude_names = [
+                    'spec_cls_model.fg_queries', 
+                    'spec_cls_model.formula_embed.0.lut.weight',
+                    'h_embed.lut.weight']
                 new_state_dict = {}
                 for name, param in model.state_dict().items():
                     if (name in checkpoint['ema_state_dict']) and (name not in exclude_names): 
@@ -168,7 +173,7 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--exp_name', type=str, default='vae')
-    parser.add_argument('--save_dir', type=str, default='./exp_vae')
+    parser.add_argument('--save_dir', type=str, default='../exp/exp_vae')
     parser.add_argument('--code_test', action='store_true')
     parser.add_argument('--h_init_embed', action='store_true')
     parser.add_argument('--dim_zh', type=int, default=16)
@@ -178,8 +183,8 @@ if __name__ == "__main__":
     # parser.add_argument('--spec_cls_weight', type=float, default=0)
     parser.add_argument('--use_spec_cls', action='store_true')
     parser.add_argument("--fix_cls_model", action='store_true')
-    parser.add_argument('--ctr_weight', type=float, default=0,
-                        help='weight of contrastive loss')
+    # parser.add_argument('--ctr_weight', type=float, default=0,
+                        # help='weight of contrastive loss')
     # parser.add_argument('--qm9s_dir', type=str, required=True)
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
@@ -221,12 +226,12 @@ if __name__ == "__main__":
     
     # Train
     parser.add_argument('--cuda', type=bool, default=True)
-    parser.add_argument('--n_epochs', type=int, default=500)
+    parser.add_argument('--n_epochs', type=int, default=300)
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--save_top_k', type=int, default=1,
                         help="Number of saved checkpoints")
-    parser.add_argument('--lr', type=float, default=1e-4)
-    parser.add_argument('--warmup_steps', type=int, default=6000)
+    parser.add_argument('--lr', type=float, default=0.1)
+    parser.add_argument('--warmup_steps', type=int, default=3000)
     parser.add_argument('--ema_decay', type=float, default=0.999,
                         help='Amount of EMA decay, 0 means off. A reasonable value is 0.999.')
     parser.add_argument('--augment_noise', type=float, default=0)
@@ -238,5 +243,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     os.environ.pop("SLURM_NTASKS", None)
+    # print(args)
     main(args)
     

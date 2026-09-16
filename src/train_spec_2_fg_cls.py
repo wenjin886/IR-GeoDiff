@@ -127,6 +127,8 @@ def main(args):
         accelerator, devices ='gpu', args.num_gpu
     elif device == "cpu":
         accelerator, devices ='cpu', "auto"
+    
+    raise ValueError("STOP HERE")
     trainer = L.Trainer(accelerator=accelerator,
                         devices=devices,
                         max_epochs=args.n_epochs,
@@ -150,11 +152,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     # Training
     parser.add_argument("--exp_name", type=str, required=True)
-    parser.add_argument("--save_dir", type=str, default='./exp_cls')
+    parser.add_argument("--save_dir", type=str, default='../exp/exp_cls')
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
-    parser.add_argument("--use_formula", action="store_true")
-    parser.add_argument("--formula_vocab_size", type=int,
-                        help='qm9s: 26')
+    parser.add_argument("--use_formula", type=bool, default=True)
+    parser.add_argument("--formula_vocab_size", type=int, default=26,
+                        help='qm9s: 26 | qme14s: 39')
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument('--train_include_qm9s', action="store_true")
     parser.add_argument("--num_fg_cls", type=int, required=True)
@@ -170,11 +172,12 @@ if __name__ == "__main__":
     parser.add_argument("--num_workers", type=int, default=17)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--code_test", action="store_true")
-    parser.add_argument("--cuda", action="store_true")
+    parser.add_argument("--cuda", type=bool, default=True)
     parser.add_argument("--save_top_k", type=int, default=1)
     
     args = parser.parse_args()
     os.environ.pop("SLURM_NTASKS", None)
     torch.set_float32_matmul_precision('medium')
-    os.environ["CUDA_LAUNCH_BLOCKING"] = "1" # debug
+    # os.environ["CUDA_LAUNCH_BLOCKING"] = "1" # debug
+    os.makedirs(args.save_dir, exist_ok=True)
     main(args)

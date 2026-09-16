@@ -131,9 +131,9 @@ def main(args):
     print("callbacks", len(callbacks))
     
     # if args.fix_spec_fg_cls or args.cls_weight > 0:
-    if args.use_vae_spec_cls:
-        print("get_diffusion_model_cls")
-        model = get_diffusion_model_cls(args, device, total_steps, ema_callback)
+    # if args.use_vae_spec_cls:
+        # print("get_diffusion_model_cls")
+    model = get_diffusion_model_cls(args, device, total_steps, ema_callback)
     # else:
         # model = get_diffusion_model_ff(args, device, total_steps, ema_callback)
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     parser.add_argument('--in_edge_nf', type=int, default=1)
     parser.add_argument('--code_test', action='store_true')
     parser.add_argument('--wandb_project', type=str, default='IR-Geo-Latent-Diff')
-    parser.add_argument('--save_dir', type=str, default='./exp_diff')
+    parser.add_argument('--save_dir', type=str, default='../exp/exp_diff')
     parser.add_argument('--loss_monitor', type=str, default='val_loss')
     parser.add_argument('--vae_dir_path', type=Path, default=None,
                         help='pre-trained vae dir containing checkpoint and args')
@@ -243,7 +243,7 @@ if __name__ == "__main__":
                         # help="modify egnn to satisfy equivariant and invariant, for rebuttal")
 
     # diff_with_vae_cls
-    parser.add_argument('--use_vae_spec_cls', action='store_true')
+    # parser.add_argument('--use_vae_spec_cls', action='store_true')
     parser.add_argument('--fix_spec_fg_cls', action='store_true')
     parser.add_argument('--cls_weight', type=float, default=0)
 
@@ -294,8 +294,8 @@ if __name__ == "__main__":
                         help="Number of saved checkpoints")
     parser.add_argument('--save_every_n_epochs', type=eval, default=None)
     parser.add_argument('--num_workers', type=int, default=17)
-    parser.add_argument('--lr', type=float, default=1e-4)
-    parser.add_argument('--warmup_steps', type=int, default=6000)
+    parser.add_argument('--lr', type=float, default=0.2)
+    parser.add_argument('--warmup_steps', type=int, default=3000)
     parser.add_argument('--ema_decay', type=float, default=0.999,
                         help='Amount of EMA decay, 0 means off. A reasonable value is 0.999.')
     parser.add_argument('--augment_noise', type=float, default=0)

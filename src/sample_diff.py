@@ -54,39 +54,37 @@ def sample_chain(spec, one_hot, charges, node_mask, edge_mask,
     
     chain_bacth_first = chain.permute(1, 0, 2, 3) # (batch_size, frames, max_n_nodes, n_dims)
 
-      
-
     return chain_bacth_first 
  
 
-def sample(spec, one_hot, charges, node_mask, edge_mask, 
-           generative_model,
-           fix_noise: bool=False,
-           sample_mode="sample", sample_times=1,
-           formula_ids=None):
+# def sample(spec, one_hot, charges, node_mask, edge_mask, 
+#            generative_model,
+#            fix_noise: bool=False,
+#            sample_mode="sample", sample_times=1,
+#            formula_ids=None):
  
-    batch_size, max_n_nodes, _ = node_mask.shape
-    h = {'categorical': one_hot, 'integer': charges}
+#     batch_size, max_n_nodes, _ = node_mask.shape
+#     h = {'categorical': one_hot, 'integer': charges}
     
-    x_all_sampled = torch.zeros(batch_size, sample_times, max_n_nodes, 3)
-    for i in tqdm(range(sample_times), desc="sample_times"):
-        x = generative_model.sample(spec=spec,
-                                    h = h,
-                                    n_samples=batch_size, 
-                                    n_nodes=max_n_nodes,
-                                    node_mask=node_mask,
-                                    edge_mask=edge_mask,
-                                    context=None,
-                                    fix_noise=fix_noise,
-                                    sample_mode=sample_mode,
-                                    formula_ids=formula_ids
-                                    )
-        assert_correctly_masked(x, node_mask)
-        assert_mean_zero_with_mask(x, node_mask)
-        x_all_sampled[:, i, :, :] = x
+#     x_all_sampled = torch.zeros(batch_size, sample_times, max_n_nodes, 3)
+#     for i in tqdm(range(sample_times), desc="sample_times"):
+#         x = generative_model.sample(spec=spec,
+#                                     h = h,
+#                                     n_samples=batch_size, 
+#                                     n_nodes=max_n_nodes,
+#                                     node_mask=node_mask,
+#                                     edge_mask=edge_mask,
+#                                     context=None,
+#                                     fix_noise=fix_noise,
+#                                     sample_mode=sample_mode,
+#                                     formula_ids=formula_ids
+#                                     )
+#         assert_correctly_masked(x, node_mask)
+#         assert_mean_zero_with_mask(x, node_mask)
+#         x_all_sampled[:, i, :, :] = x
 
 
-    return x_all_sampled
+#     return x_all_sampled
 
 def sample_ff(spec, one_hot, charges, node_mask, edge_mask, 
            generative_model,
@@ -244,22 +242,22 @@ def main(args):
                                                )
                                  
         else:
-            if formula is None:
-                x = sample(spec, one_hot.to(device, dtype), charges.to(device, dtype),
-                                            node_mask, edge_mask, 
-                                            generative_model=diff_model.to(device), 
-                                            fix_noise=False,
-                                            sample_mode=args.sample_mode,
-                                            sample_times=args.sample_times)
-            else:
-                x = sample_ff(spec, one_hot.to(device, dtype), charges.to(device, dtype),
-                                            node_mask, edge_mask, 
-                                            generative_model=diff_model.to(device), 
-                                            fix_noise=False,
-                                            sample_mode=args.sample_mode,
-                                            sample_times=args.sample_times,
-                                            formula_ids=formula)
-            
+            # if formula is None:
+            #     x = sample(spec, one_hot.to(device, dtype), charges.to(device, dtype),
+            #                                 node_mask, edge_mask, 
+            #                                 generative_model=diff_model.to(device), 
+            #                                 fix_noise=False,
+            #                                 sample_mode=args.sample_mode,
+            #                                 sample_times=args.sample_times)
+            # else:
+            x = sample_ff(spec, one_hot.to(device, dtype), charges.to(device, dtype),
+                                        node_mask, edge_mask, 
+                                        generative_model=diff_model.to(device), 
+                                        fix_noise=False,
+                                        sample_mode=args.sample_mode,
+                                        sample_times=args.sample_times,
+                                        formula_ids=formula)
+        
                                         
         node_mask_list.append(node_mask.squeeze(2).cpu().numpy())
         pos_pred_list.append(x.cpu().numpy())
@@ -315,7 +313,7 @@ if __name__ == "__main__":
     parser.add_argument("--diff_dir_path", type=Path, default=True)
     parser.add_argument("--last_checkpoint", action="store_true")
     parser.add_argument("--checkpoint", type=str)
-    parser.add_argument("--diff_model", type=str, default="pos", choices=["pos", "all"])
+    # parser.add_argument("--diff_model", type=str, default="pos", choices=["pos", "all"])
     parser.add_argument('--test_sample', action="store_true",
                         help="If True, only sample one batch.")
     parser.add_argument('--batch_size', type=int, default=128)

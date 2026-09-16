@@ -1,6 +1,6 @@
 import torch
 
-from dataset.dataset_dataloader import qm9s_dataset_info, qme14s_dataset_info
+from .dataset.dataset_dataloader import qm9s_dataset_info, qme14s_dataset_info
 
 from .model.diff_with_vae_cls import EnLatentPosDiffusion as EnLatentPosDiffusion_cls
 
@@ -10,8 +10,7 @@ from .model.vae_ import EGNN_encoder_QM9 as EGNN_encoder_QM9_ff
 from .model.vae_ import EGNN_decoder_QM9 as EGNN_decoder_QM9_ff
 from .model.vae_ import EnHierarchicaPosVAE as EnHierarchicaPosVAE_cls
 
-from .model.egnn_ import EGNN_dynamics_QM9S_CAmodified
-
+from .model.egnn_ import EGNN_dynamics_QM9S
 from .model.train_utils import EMACallback
 
 import os
@@ -52,13 +51,19 @@ def load_diffusion(diff_dir_path, device, last_checkpoint=False, checkpoint=None
 
 def get_checkpoint(exp_dir_path, last_checkpoint=False):
     files = os.listdir(exp_dir_path)
+    ckpt_name = None
     for f in files:
         if '.ckpt' in f: 
             if (last_checkpoint) and ('last' in f) :
+                ckpt_name = f
                 break
             elif (not last_checkpoint) and ('last' not in f):
+                ckpt_name = f
                 break
-    return osp.join(exp_dir_path, f), f
+    if ckpt_name is None:
+        return None, None
+    else:
+        return osp.join(exp_dir_path, ckpt_name), ckpt_name
 
 def get_vae_model_cls(args, device, total_steps, ema_callback):
     if  not hasattr(args, 'dataset'):
@@ -98,14 +103,29 @@ def get_vae_model_cls(args, device, total_steps, ema_callback):
     if not hasattr(args, 'use_cross_attn'):
         args.use_cross_attn = True
 
-    assert args.ctr_weight == 0
+    # assert args.ctr_weight == 0
     assert osp.exists(args.spec_cls_checkpoint)
     print(f"Loading spec_cls_checkpoint: {args.spec_cls_checkpoint}")
     if osp.isdir(args.spec_cls_checkpoint):
         spec_cls_checkpoint, _ = get_checkpoint(args.spec_cls_checkpoint)
     else: spec_cls_checkpoint = args.spec_cls_checkpoint
-    classifier = SpecFuncGroupsClsModel.load_from_checkpoint(spec_cls_checkpoint)
-    
+    if spec_cls_checkpoint is not None:
+        print(f"Loading spec_cls_checkpoint: {spec_cls_checkpoint}")
+        classifier = SpecFuncGroupsClsModel.load_from_checkpoint(spec_cls_checkpoint)
+    else:
+        with open(os.path.join(args.spec_cls_checkpoint, 'args.pickle'), 'rb') as f:
+            spec_cls_args = pickle.load(f)
+        print("spec_cls_args:")
+        pprint(vars(spec_cls_args))
+        classifier = SpecFuncGroupsClsModel(formula_vocab_size=spec_cls_args.formula_vocab_size,
+                                       num_fg_cls=spec_cls_args.num_fg_cls,
+                                       use_formula=spec_cls_args.use_formula,
+                                       n_spec_f_encoder_layer=spec_cls_args.n_spec_f_encoder_layer,
+                                       n_fg_decoder_layer=spec_cls_args.n_fg_decoder_layer,
+                                       lr=spec_cls_args.lr,
+                                       warm_up_step=spec_cls_args.warmup_steps,
+                                       device=device)
+        
     vae = EnHierarchicaPosVAE_cls(encoder=encoder,
                             decoder=decoder,
                             spec_cls_model=classifier,
@@ -232,25 +252,26 @@ def get_diffusion_model_cls(args, device, total_steps=None, ema_callback=None, d
         pprint(vars(first_stage_args))
     
     
-    if hasattr(first_stage_args, "use_spec_cls") and first_stage_args.use_spec_cls:
-        first_stage_args.cls_weight = 0
-        vae = get_vae_model_cls(first_stage_args, device, total_steps, ema_callback)
-    elif hasattr(first_stage_args, "cls_weight") and first_stage_args.cls_weight > 0:
-        if not hasattr(first_stage_args, "use_spec_cls"):
-            print("Warning: first_stage_args do not have use_spec_cls")
-        elif not first_stage_args.use_spec_cls:
-            print("Warning: first_stage_args.use_spec_cls is False")
-        vae = get_vae_model_cls(first_stage_args, device, total_steps, ema_callback)
+    # if hasattr(first_stage_args, "use_spec_cls") and first_stage_args.use_spec_cls:
+    #     first_stage_args.cls_weight = 0
+    #     vae = get_vae_model_cls(first_stage_args, device, total_steps, ema_callback)
+    # elif hasattr(first_stage_args, "cls_weight") and first_stage_args.cls_weight > 0:
+    #     if not hasattr(first_stage_args, "use_spec_cls"):
+    #         print("Warning: first_stage_args do not have use_spec_cls")
+    #     elif not first_stage_args.use_spec_cls:
+    #         print("Warning: first_stage_args.use_spec_cls is False")
+    vae = get_vae_model_cls(first_stage_args, device, total_steps, ema_callback)
 
     if diff_checkpoint is None:
         # checkpoint = torch.load(osp.join(args.vae_dir_path, args.vae_checkpoint))
         checkpoint, _ = get_checkpoint(args.vae_dir_path)
-        print(f"Loading vae checkpoint from {checkpoint}")
-        checkpoint = torch.load(checkpoint)
-        if "ema_state_dict" in checkpoint:
-            vae.load_state_dict(checkpoint["ema_state_dict"])
-        else:
-            vae.load_state_dict(checkpoint["state_dict"])
+        if checkpoint is not None:
+            print(f"Loading vae checkpoint from {checkpoint}")
+            checkpoint = torch.load(checkpoint)
+            if "ema_state_dict" in checkpoint:
+                vae.load_state_dict(checkpoint["ema_state_dict"])
+            else:
+                vae.load_state_dict(checkpoint["state_dict"])
     
     print("use_formula: ", args.use_formula, "use_edge: ", args.use_edge)
     if not first_stage_args.h_init_embed:
@@ -276,7 +297,7 @@ def get_diffusion_model_cls(args, device, total_steps=None, ema_callback=None, d
     #     if not hasattr(args, "use_incorrect_edge"):
     #         args.use_incorrect_edge = False
 
-    net_dynamics = EGNN_dynamics_QM9S_CAmodified(
+    net_dynamics = EGNN_dynamics_QM9S(
         d_model=512, spec_len=3200, patch_len=64,
         use_atom_cross_attn=args.use_atom_cross_attn,
         use_edge_cross_attn=args.use_edge_cross_attn,
