@@ -215,8 +215,8 @@ if __name__ == "__main__":
     parser.add_argument('--exp_name', type=str, default='diffusion')
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
-    parser.add_argument("--num_fg_cls", type=int)
-    parser.add_argument('--use_edge', action='store_true')
+    parser.add_argument("--num_fg_cls", type=int, default=20)
+    parser.add_argument('--use_edge', type=eval, default=True)
     parser.add_argument('--in_edge_nf', type=int, default=1)
     parser.add_argument('--code_test', action='store_true')
     parser.add_argument('--wandb_project', type=str, default='IR-Geo-Latent-Diff')
@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--use_atom_cross_attn", type=eval, default=True)
     parser.add_argument("--use_edge_cross_attn", type=eval, default=True)
-    parser.add_argument("--use_formula", action="store_true")
+    parser.add_argument("--use_formula", type=eval, default=True)
     parser.add_argument("--use_fg", action="store_true")
     parser.add_argument("--num_fg_cross_attn_layers", type=int, default=2)
     parser.add_argument("--spec_fg_cls_checkpoint", type=str)
@@ -244,7 +244,7 @@ if __name__ == "__main__":
 
     # diff_with_vae_cls
     # parser.add_argument('--use_vae_spec_cls', action='store_true')
-    parser.add_argument('--fix_spec_fg_cls', action='store_true')
+    parser.add_argument('--fix_spec_fg_cls', type=eval, default=True)
     parser.add_argument('--cls_weight', type=float, default=0)
 
 

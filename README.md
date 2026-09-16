@@ -1,5 +1,5 @@
 # Latent Diffusion-Based 3D Molecular Recovery from Infrared Spectra
-> Code will be released soon.
+<!-- > Code will be released soon. -->
 
 ## Abstract
 
@@ -31,11 +31,10 @@ python -m src.train_ae \
     --dataset qm9s \
     --data_dir path/to/qm9s/data \
     --spec_cls_checkpoint path/to/classifier/checkpoint/ \
-    --use_spec_cls \
+    --use_spec_cls True \
     --cls_weight 1 \
-    --use_cross_attn \
-    --use_formula \
-    --h_init_embed \
+    --use_cross_attn True \
+    --h_init_embed True \
     --dim_zh 16 
 ```
 
@@ -44,19 +43,18 @@ python -m src.train_ae \
 python -m src.train_diff \
     --exp_name qm9s_diff \
     --dataset qm9s \
-    --fix_spec_fg_cls \
-    --data_dir /rds/projects/c/chenlv-ai-and-chemistry/wuwj/IR-Geo-Latent-Diff/DATASETS/qm9s/qm9s_process/fg20 \
+    --fix_spec_fg_cls True \
+    --data_dir path/to/qm9s/data \
     --num_fg_cls 20 \
     --batch_size 64 \
     --n_epochs 1000 \
-    --use_edge \
+    --use_edge True \
     --in_edge_nf 16 \
-    --use_formula \
-    --vae_dir_path
+    --use_formula True \
+    --vae_dir_path path/to/ae/directory/
 ```
 
 ## Sampling on QM9S
-
 ```
 python -m src.sample_diff \
     --use_full_cls \
