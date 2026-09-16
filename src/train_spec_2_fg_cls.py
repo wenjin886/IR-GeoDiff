@@ -28,7 +28,7 @@ def set_seed(seed, device, num_gpu=1):
     if device == "cuda":
         torch.cuda.manual_seed(seed)
         if num_gpu > 1:
-            torch.cuda.manual_seed_all(seed)  # 如果使用多个 GPU
+            torch.cuda.manual_seed_all(seed) 
 
 def get_formatted_exp_name(exp_name, resume=False):
     formatted_time = datetime.now().strftime("%H-%M-%m-%d-%Y")

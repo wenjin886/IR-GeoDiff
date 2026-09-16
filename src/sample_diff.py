@@ -115,9 +115,9 @@ def stack_array(array_list, sample_times=1):
             padded_arr[:, :nodes] = array
         padded_arr_list.append(padded_arr)
 
-    # stack 所有填充后的数组
+    
     stacked_array = np.vstack(padded_arr_list)
-    print("stacked_array", stacked_array.shape)
+    # print("stacked_array", stacked_array.shape)
     return stacked_array
 
 def main(args):
