@@ -7,10 +7,10 @@ import os
 import math
 import re
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-from structural_analysis import get_clean_smi, check_quiv_by_inchikey
-import shutil
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+from .structural_analysis import get_clean_smi, check_quiv_by_inchikey
+# import shutil
 from scipy import interpolate
 import logging
 from ..dataset.xyz2mol_final import XYZ2MOL
@@ -22,84 +22,84 @@ INDEX2TYPE = {0: "H", 1: "C", 2:"N", 3:"O", 4:"F"}
 SCALING_FACTOR = 0.965  
 
 
-def xyz2gjf(onehot, pos, num_atoms, save_dir, filename, NProcShared):
+# def xyz2gjf(onehot, pos, num_atoms, save_dir, filename, NProcShared):
     
-    atoms = np.argmax(onehot[:num_atoms, :],  axis=1).tolist()
-    atomic_symbols = [INDEX2TYPE[int(k)] for k in atoms]
-    xyz_coordinates = pos[:num_atoms].tolist()
+#     atoms = np.argmax(onehot[:num_atoms, :],  axis=1).tolist()
+#     atomic_symbols = [INDEX2TYPE[int(k)] for k in atoms]
+#     xyz_coordinates = pos[:num_atoms].tolist()
 
-    with open(os.path.join(save_dir, f"{filename}.gjf"), "w") as f_:
-        f_.write(f"%Chk={filename}.chk\n")
-        f_.write(f"%Mem={int(NProcShared*2)}GB\n")
-        f_.write(f"%NProcShared={NProcShared}\n")
-        f_.write(f"# B3LYP/def2TZVP opt freq\n")
-        f_.write("\n")
-        f_.write(f"{filename}\n")
-        f_.write("\n")
-        f_.write("0 1\n")
-        for i in range(num_atoms):
-            xyz_i = xyz_coordinates[i]
-            f_.write(f"{atomic_symbols[i]} {' '.join([str(j) for j in xyz_i])}\n")
-        f_.write("\n")
+#     with open(os.path.join(save_dir, f"{filename}.gjf"), "w") as f_:
+#         f_.write(f"%Chk={filename}.chk\n")
+#         f_.write(f"%Mem={int(NProcShared*2)}GB\n")
+#         f_.write(f"%NProcShared={NProcShared}\n")
+#         f_.write(f"# B3LYP/def2TZVP opt freq\n")
+#         f_.write("\n")
+#         f_.write(f"{filename}\n")
+#         f_.write("\n")
+#         f_.write("0 1\n")
+#         for i in range(num_atoms):
+#             xyz_i = xyz_coordinates[i]
+#             f_.write(f"{atomic_symbols[i]} {' '.join([str(j) for j in xyz_i])}\n")
+#         f_.write("\n")
 
-def check_dir(dir_name):
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
-    return dir_name
+# def check_dir(dir_name):
+#     if not os.path.exists(dir_name):
+#         os.makedirs(dir_name)
+#     return dir_name
 
-def main_xyz2gjf(data_file, NProcShared, num_mol_compute=None, num_sample_compute=None):
-    """
-    args:
-        data_file: .npz file
-    """
-    data = np.load(data_file)
-    pos_pred = data["pos_pred"] # (num_mol, num_sample, max_num_nodes, dims)
-    pos_tgt = data["pos_tgt"] # (num_mol, max_num_nodes, dims)
-    onehot = data["onehot"]
-    node_mask = data["node_mask"]
+# def main_xyz2gjf(data_file, NProcShared, num_mol_compute=None, num_sample_compute=None):
+#     """
+#     args:
+#         data_file: .npz file
+#     """
+#     data = np.load(data_file)
+#     pos_pred = data["pos_pred"] # (num_mol, num_sample, max_num_nodes, dims)
+#     pos_tgt = data["pos_tgt"] # (num_mol, max_num_nodes, dims)
+#     onehot = data["onehot"]
+#     node_mask = data["node_mask"]
 
-    num_atoms_all = np.sum(node_mask,axis=1,dtype=int)
-    num_mol, num_sample, max_num_nodes, dims = pos_pred.shape
-    if num_mol_compute is None: num_mol_compute = num_mol
-    if num_sample_compute is None: num_sample_compute = num_sample
-    assert (num_mol_compute <= num_mol) & (num_sample_compute <= num_sample)
+#     num_atoms_all = np.sum(node_mask,axis=1,dtype=int)
+#     num_mol, num_sample, max_num_nodes, dims = pos_pred.shape
+#     if num_mol_compute is None: num_mol_compute = num_mol
+#     if num_sample_compute is None: num_sample_compute = num_sample
+#     assert (num_mol_compute <= num_mol) & (num_sample_compute <= num_sample)
 
-    save_dir = os.path.dirname(data_file)
-    dir_name = data_file.split("/")[-1].split(".")[0]
-    save_dir = os.path.join(save_dir, f"gjf_{dir_name}")
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+#     save_dir = os.path.dirname(data_file)
+#     dir_name = data_file.split("/")[-1].split(".")[0]
+#     save_dir = os.path.join(save_dir, f"gjf_{dir_name}")
+#     if not os.path.exists(save_dir):
+#         os.makedirs(save_dir)
 
-    for i in tqdm(range(num_mol_compute)):
-        num_atoms_i = num_atoms_all[i]
-        onehot_i = onehot[i]
+#     for i in tqdm(range(num_mol_compute)):
+#         num_atoms_i = num_atoms_all[i]
+#         onehot_i = onehot[i]
 
-        file_name_tgt = f"mol_{i}_tgt"
-        save_dir_i = os.path.join(save_dir, f"mol_{i}")
-        check_dir(save_dir_i)
-        save_dir_i_tgt = os.path.join(save_dir_i, "tgt")
-        check_dir(save_dir_i_tgt)
-        xyz2gjf(onehot=onehot_i, pos=pos_tgt[i], num_atoms=num_atoms_i, 
-                save_dir=save_dir_i_tgt, filename=file_name_tgt,
-                NProcShared=NProcShared)
+#         file_name_tgt = f"mol_{i}_tgt"
+#         save_dir_i = os.path.join(save_dir, f"mol_{i}")
+#         check_dir(save_dir_i)
+#         save_dir_i_tgt = os.path.join(save_dir_i, "tgt")
+#         check_dir(save_dir_i_tgt)
+#         xyz2gjf(onehot=onehot_i, pos=pos_tgt[i], num_atoms=num_atoms_i, 
+#                 save_dir=save_dir_i_tgt, filename=file_name_tgt,
+#                 NProcShared=NProcShared)
         
-        pos_pred_i = pos_pred[i]
-        for j in tqdm(range(num_sample_compute)):
-            file_name_pred = f"mol_{i}_sample_{j}"
-            save_dir_i_j = os.path.join(save_dir_i, f"sample_{j}")
-            check_dir(save_dir_i_j)
-            xyz2gjf(onehot=onehot_i, pos=pos_pred_i[j], num_atoms=num_atoms_i, 
-                    save_dir=save_dir_i_j, filename=file_name_pred,
-                    NProcShared=NProcShared)
+#         pos_pred_i = pos_pred[i]
+#         for j in tqdm(range(num_sample_compute)):
+#             file_name_pred = f"mol_{i}_sample_{j}"
+#             save_dir_i_j = os.path.join(save_dir_i, f"sample_{j}")
+#             check_dir(save_dir_i_j)
+#             xyz2gjf(onehot=onehot_i, pos=pos_pred_i[j], num_atoms=num_atoms_i, 
+#                     save_dir=save_dir_i_j, filename=file_name_pred,
+#                     NProcShared=NProcShared)
 
-def norm_spectrum(
-    spectrum: np.ndarray, bounds=(0, 99)
-) -> np.ndarray:
-    spectrum_norm = spectrum / max(spectrum) * bounds[1]
-    spectrum_norm_int = spectrum_norm.astype(int)
-    spectrum_norm_int = np.clip(spectrum_norm_int, *bounds)
-    spectrum_norm_int = spectrum_norm_int/max(spectrum_norm_int)
-    return spectrum_norm_int
+# def norm_spectrum(
+#     spectrum: np.ndarray, bounds=(0, 99)
+# ) -> np.ndarray:
+#     spectrum_norm = spectrum / max(spectrum) * bounds[1]
+#     spectrum_norm_int = spectrum_norm.astype(int)
+#     spectrum_norm_int = np.clip(spectrum_norm_int, *bounds)
+#     spectrum_norm_int = spectrum_norm_int/max(spectrum_norm_int)
+#     return spectrum_norm_int
 
 def parse_gaussian_log(log_file, scale=True):
     frequencies = []
@@ -148,10 +148,10 @@ def check_normalize(y_values):
         y_values = y_values / max(y_values)
     return y_values
 
-def save_processed_ir_csv(x_values, spectrum, csv_filename):
-    df = pd.DataFrame({"Wavenumber (cm⁻¹)": x_values, "Intensity": spectrum})
-    df.to_csv(csv_filename, index=False)
-    print(f"Done. The is spectrum is saved as {csv_filename}.")
+# def save_processed_ir_csv(x_values, spectrum, csv_filename):
+#     df = pd.DataFrame({"Wavenumber (cm⁻¹)": x_values, "Intensity": spectrum})
+#     df.to_csv(csv_filename, index=False)
+#     print(f"Done. The is spectrum is saved as {csv_filename}.")
     
 def make_conv_matrix(frequencies=list(range(500,4001,1)),std_dev=10):
     length=len(frequencies)
@@ -201,46 +201,46 @@ def spectral_information_similarity(spectrum1, spectrum2,
 
     return sim
 
-def plot_spec(y_origin,
-              y_gaussian, 
-              x_origin=np.linspace(500,4000,3501), 
-              x_gaussian=np.linspace(500,4000,3501), 
-              title=None,
-              SIS=None,
-              save_name=None):
+# def plot_spec(y_origin,
+#               y_gaussian, 
+#               x_origin=np.linspace(500,4000,3501), 
+#               x_gaussian=np.linspace(500,4000,3501), 
+#               title=None,
+#               SIS=None,
+#               save_name=None):
     
-    plt.figure(figsize=(8, 4))
-    plt.plot(x_gaussian, y_gaussian, label="Broadened IR Spectrum")
-    plt.plot(x_origin, y_origin, label="IR Spectrum from QM9S", alpha=0.7)
-    plt.xlabel("Wavenumber (cm⁻¹)")
-    plt.ylabel("Intensity")
-    if title is None:
-        title = "Infrared Spectrum Comparison"
-    if SIS is not None:
-        title += f" | SIS: {SIS:.2f}"
+#     plt.figure(figsize=(8, 4))
+#     plt.plot(x_gaussian, y_gaussian, label="Broadened IR Spectrum")
+#     plt.plot(x_origin, y_origin, label="IR Spectrum from QM9S", alpha=0.7)
+#     plt.xlabel("Wavenumber (cm⁻¹)")
+#     plt.ylabel("Intensity")
+#     if title is None:
+#         title = "Infrared Spectrum Comparison"
+#     if SIS is not None:
+#         title += f" | SIS: {SIS:.2f}"
     
-    plt.title(title)
-    plt.gca().invert_xaxis()  # IR 频谱通常从高频到低频显示
-    plt.legend()
-    if save_name is None:
-        save_name = "spec_comparison.png"
-    plt.savefig(save_name)
-    plt.close()
+#     plt.title(title)
+#     plt.gca().invert_xaxis()  # IR 频谱通常从高频到低频显示
+#     plt.legend()
+#     if save_name is None:
+#         save_name = "spec_comparison.png"
+#     plt.savefig(save_name)
+#     plt.close()
 
-def find_ir_origin(smi, ir_df, x_origin, save_name='ir_origin.npz'):
-    if smi in ir_df['smiles']:
-        ir_origin = ir_df[ir_df['smiles']==smi]['spectra'].values[0]
-    else:
-        for smi_origin in ir_df['smiles']:
-            smi_canon = Chem.CanonSmiles(smi_origin)
-            if smi_canon == smi:
-                ir_origin = ir_df[ir_df['smiles']==smi_origin]['spectra'].values[0]
-                break
+# def find_ir_origin(smi, ir_df, x_origin, save_name='ir_origin.npz'):
+#     if smi in ir_df['smiles']:
+#         ir_origin = ir_df[ir_df['smiles']==smi]['spectra'].values[0]
+#     else:
+#         for smi_origin in ir_df['smiles']:
+#             smi_canon = Chem.CanonSmiles(smi_origin)
+#             if smi_canon == smi:
+#                 ir_origin = ir_df[ir_df['smiles']==smi_origin]['spectra'].values[0]
+#                 break
         
     
-    if save_name is not None:
-        np.savez(save_name, ir_origin=ir_origin, smi=smi, x_origin=x_origin)
-    return ir_origin
+#     if save_name is not None:
+#         np.savez(save_name, ir_origin=ir_origin, smi=smi, x_origin=x_origin)
+#     return ir_origin
 
 def find_log_file(dir_name):
     for file in os.listdir(dir_name):
@@ -374,10 +374,6 @@ def main_ir_sis(args):
         if not check_quiv_by_inchikey(smi_origin, smi_tgt):
             raise ValueError(f"{i} | Converted smiles {smi_tgt} and smiles from {args.dataset} {smi_origin} do not match.")
 
-
-    
-    
-
     for i in tqdm(range(num_mol)):
         if args.start_mol != -1 and args.end_mol != -1:
             i = args.start_mol + i
@@ -479,49 +475,49 @@ def main_ir_sis(args):
     compute_df.to_csv(os.path.join(ir_compute_dir, f"computed_sis_{num_mol}.csv"))
 
 
-def plot_sis_tsim(tsim, sis):
-    sns.scatterplot(x=tsim, y=sis)
-    plt.xlabel('Tanimoto Similarity')
-    plt.ylabel('Spectral Information Similarity')
-    plt.savefig('./tsim_sis.png', dpi=800)
-    plt.close()
+# def plot_sis_tsim(tsim, sis):
+#     sns.scatterplot(x=tsim, y=sis)
+#     plt.xlabel('Tanimoto Similarity')
+#     plt.ylabel('Spectral Information Similarity')
+#     plt.savefig('./tsim_sis.png', dpi=800)
+#     plt.close()
 
-    sns.histplot(sis, bins=50)
-    plt.xlabel('Spectral Information Similarity')
-    plt.ylabel('Frequency')
-    plt.savefig('./sis.png', dpi=800)
-    plt.close()
+#     sns.histplot(sis, bins=50)
+#     plt.xlabel('Spectral Information Similarity')
+#     plt.ylabel('Frequency')
+#     plt.savefig('./sis.png', dpi=800)
+#     plt.close()
 
-    sns.histplot(tsim, bins=50)
-    plt.xlabel('Tanimoto Similarity')
-    plt.ylabel('Frequency')
-    plt.savefig('./tsim.png', dpi=800)
-    plt.close()
+#     sns.histplot(tsim, bins=50)
+#     plt.xlabel('Tanimoto Similarity')
+#     plt.ylabel('Frequency')
+#     plt.savefig('./tsim.png', dpi=800)
+#     plt.close()
 
-def retrieve_comparison_plots(spec_sis_df, src_dir):
-    save_dir = "./comparison_plots"
-    sis_min = 0.2
-    step = 0.1
-    while sis_min < 1:
-        sis_max = sis_min + 0.1
-        save_dir_i = os.path.join(save_dir, f"{sis_min}_{sis_max}")
-        if os.path.exists(save_dir_i):
-            os.mkdir(save_dir_i)
-            spec_sis_df_i = spec_sis_df[spec_sis_df["sis"]>sis_min]
-            spec_sis_df_i = spec_sis_df_i[spec_sis_df_i["sis"]<sis_max]
-            for j, row in spec_sis_df_i.iterrows():
-                mol_idx = row["mol_idx"]
-                ir_idx = row['ir_idx']
-                t_sim = row['tanimoto_similarity']
-                is_smi_matched = row['is_smi_matched']
-                if ir_idx == 'tgt':
-                    new_fig_name = f"mol{mol_idx}_{ir_idx}.png"
-                    shutil.copy(os.path.join(src_dir, f'mol_{mol_idx}/tgt/ir_comparison.png'),
-                                os.path.join(save_dir_i, new_fig_name))
-                else:
-                    new_fig_name = f"mol{mol_idx}_sample{ir_idx}_{t_sim:2f}_{is_smi_matched}.png"
-                    shutil.copy(os.path.join(src_dir, f'mol_{mol_idx}/sample_{ir_idx}/ir_comparison.png'),
-                                os.path.join(save_dir_i, new_fig_name))
+# def retrieve_comparison_plots(spec_sis_df, src_dir):
+#     save_dir = "./comparison_plots"
+#     sis_min = 0.2
+#     step = 0.1
+#     while sis_min < 1:
+#         sis_max = sis_min + 0.1
+#         save_dir_i = os.path.join(save_dir, f"{sis_min}_{sis_max}")
+#         if os.path.exists(save_dir_i):
+#             os.mkdir(save_dir_i)
+#             spec_sis_df_i = spec_sis_df[spec_sis_df["sis"]>sis_min]
+#             spec_sis_df_i = spec_sis_df_i[spec_sis_df_i["sis"]<sis_max]
+#             for j, row in spec_sis_df_i.iterrows():
+#                 mol_idx = row["mol_idx"]
+#                 ir_idx = row['ir_idx']
+#                 t_sim = row['tanimoto_similarity']
+#                 is_smi_matched = row['is_smi_matched']
+#                 if ir_idx == 'tgt':
+#                     new_fig_name = f"mol{mol_idx}_{ir_idx}.png"
+#                     shutil.copy(os.path.join(src_dir, f'mol_{mol_idx}/tgt/ir_comparison.png'),
+#                                 os.path.join(save_dir_i, new_fig_name))
+#                 else:
+#                     new_fig_name = f"mol{mol_idx}_sample{ir_idx}_{t_sim:2f}_{is_smi_matched}.png"
+#                     shutil.copy(os.path.join(src_dir, f'mol_{mol_idx}/sample_{ir_idx}/ir_comparison.png'),
+#                                 os.path.join(save_dir_i, new_fig_name))
 
 
 

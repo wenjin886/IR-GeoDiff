@@ -32,8 +32,6 @@ def get_formatted_exp_name(exp_name, resume=False):
 
 
 
-
-
 def main(args):
     device = "cuda" if (args.cuda and torch.cuda.is_available()) else "cpu"
 
@@ -105,7 +103,6 @@ def main(args):
     best_checkpoint_callback = ModelCheckpoint(dirpath=best_dir_path,
                                           save_top_k=args.save_top_k, 
                                           monitor=args.loss_monitor,
-                                        #   monitor='val_loss_recon',
                                           save_last=True)
 
     callbacks = [best_checkpoint_callback]                                    
@@ -115,7 +112,7 @@ def main(args):
         periodic_checkpoint_callback = ModelCheckpoint(
                                         dirpath=periodic_dir_path,
                                         every_n_epochs=args.save_every_n_epochs,
-                                        save_top_k=-1  # 保存所有
+                                        save_top_k=-1  
                                     )
         callbacks.append(periodic_checkpoint_callback)
 
@@ -128,15 +125,7 @@ def main(args):
     else:
         ema_callback = None
         
-    print("callbacks", len(callbacks))
-    
-    # if args.fix_spec_fg_cls or args.cls_weight > 0:
-    # if args.use_vae_spec_cls:
-        # print("get_diffusion_model_cls")
     model = get_diffusion_model_cls(args, device, total_steps, ema_callback)
-    # else:
-        # model = get_diffusion_model_ff(args, device, total_steps, ema_callback)
-
     if args.code_test:
         wandb_logger = None
         fast_dev_run = 1 # run 1 batch through the trainer to see if there are any bugs
@@ -166,6 +155,7 @@ def main(args):
                         gradient_clip_algorithm=None,
                         accumulate_grad_batches=args.accumulate_grad_batches
                         )
+    raise ValueError("Stop")
     if args.resume:
         trainer.fit(model=model, 
                     ckpt_path=args.diff_checkpoint,
@@ -180,10 +170,8 @@ def main(args):
                 model.load_state_dict(checkpoint["ema_state_dict"], strict=True)
             
             else: # train_qme14s_from_qm9s
-                # exclude_names = ['vae.spec_cls_model.fg_queries', 'vae.spec_cls_model.formula_embed.0.lut.weight', 'vae.h_embed.lut.weight']
                 exclude_names = 'vae' # use pretrained vae model for qme14s
                 print("Loading pretrained QM9S model...")
-                # exclude_names = ['vae.spec_cls_model', 'vae.h_embed.lut.weight']
                 print("exclude_names", exclude_names)
                 new_state_dict = {}
                 for name, param in model.state_dict().items():
@@ -201,7 +189,7 @@ def main(args):
                     
                 
                 model.load_state_dict(new_state_dict, strict=True)
-                # raise ValueError('stop here')
+                
 
         trainer.fit(model=model, 
                     train_dataloaders=train_loader, 

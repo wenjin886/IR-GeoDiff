@@ -138,13 +138,11 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    # parser.add_argument("--eval_mode", choices=["spec", "geo"] )
     parser.add_argument("--cls_dir_path", type=str)
     parser.add_argument("--last_checkpoint", action="store_true", default=False)
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
     parser.add_argument("--num_fg_cls", type=int)
     parser.add_argument("--data_dir", type=str)
-    # parser.add_argument("--diff_dir_path", type=Path, default=True)
     parser.add_argument('--batch_size', type=int, default=256)
     parser.add_argument('--num_workers', type=int, default=17)
     parser.add_argument("--cuda", action="store_true", default=True)

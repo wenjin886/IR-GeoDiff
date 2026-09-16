@@ -34,7 +34,6 @@ class EGNN_encoder_QM9(nn.Module):
         super().__init__()
 
         include_charges = int(include_charges)
-        # num_classes = in_node_nf - include_charges
 
         self.egnn = EGNN(
             in_node_nf=in_node_nf + context_node_nf, out_node_nf=hidden_nf, 
@@ -56,7 +55,6 @@ class EGNN_encoder_QM9(nn.Module):
         self.device_ = device
         self.n_dims = n_dims
         self._edges_dict = {}
-        # self.condition_time = condition_time
 
         self.out_node_nf = out_node_nf
 
@@ -86,7 +84,6 @@ class EGNN_encoder_QM9(nn.Module):
             h = xh[:, self.n_dims:].clone()
 
         if context is not None:
-            # We're conditioning, awesome!
             context = context.view(bs*n_nodes, self.context_node_nf)
             h = torch.cat([h, context], dim=1)
 

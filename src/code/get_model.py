@@ -96,7 +96,6 @@ def get_vae_model_cls(args, device, total_steps, ema_callback):
     if not hasattr(args, 'use_cross_attn'):
         args.use_cross_attn = True
 
-    # assert args.ctr_weight == 0
     assert osp.exists(args.spec_cls_checkpoint)
     print(f"Loading spec_cls_checkpoint: {args.spec_cls_checkpoint}")
     if osp.isdir(args.spec_cls_checkpoint):

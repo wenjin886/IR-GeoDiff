@@ -9,8 +9,7 @@ from rdkit import DataStructs
 from tqdm import tqdm
 import os
 import os.path as osp
-# from xyz2mol_validity import XYZ2MOL, GeometriesError
-# from xyz2mol_qme14s import XYZ2MOL as XYZ2MOL_qme14s, GeometriesError
+
 import pandas as pd
 import argparse
 
@@ -340,7 +339,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_path', type=str, default="./")
     parser.add_argument('--debug', action="store_true")
     parser.add_argument('--debug_data', type=int, default=10)
-    parser.add_argument("--dataset", choices=["qm9s","fg26", "qme14s"], default="qm9s")
+    parser.add_argument("--dataset", choices=["qm9s", "qme14s"], default="qm9s")
     args = parser.parse_args()
     
     

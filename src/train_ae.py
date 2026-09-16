@@ -99,11 +99,8 @@ def main(args):
     # cal total_step
     batches_per_epoch = len(train_loader)
     total_steps = int(args.n_epochs * batches_per_epoch)
-    # if hasattr(args, "use_spec_cls") and args.use_spec_cls:
     model = get_vae_model_cls(args, device, total_steps, ema_callback)
-    # else:
-        # model = get_vae_model_ff(args, device, total_steps, ema_callback)
-    
+ 
 
     trainer = L.Trainer(accelerator='gpu',
                         devices=1,
@@ -152,19 +149,15 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--exp_name', type=str, default='vae')
-    parser.add_argument('--save_dir', type=str, default='../exp/exp_vae')
+    parser.add_argument('--save_dir', type=str, default='../exp/exp_ae')
     parser.add_argument('--code_test', action='store_true')
     parser.add_argument('--h_init_embed', type=eval, default=True)
     parser.add_argument('--dim_zh', type=int, default=16)
     parser.add_argument('--use_formula', type=eval, default=True)
     parser.add_argument("--use_cross_attn", type=eval, default=True)
     parser.add_argument('--spec_cls_checkpoint', type=str, default="None")
-    # parser.add_argument('--spec_cls_weight', type=float, default=0)
     parser.add_argument('--use_spec_cls', type=eval, default=True)
     parser.add_argument("--fix_cls_model", action='store_true')
-    # parser.add_argument('--ctr_weight', type=float, default=0,
-                        # help='weight of contrastive loss')
-    # parser.add_argument('--qm9s_dir', type=str, required=True)
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument("--dataset", choices=["qm9s", "qme14s"], required=True)
     parser.add_argument('--split_file', type=str, default='')
