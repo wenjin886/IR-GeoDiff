@@ -12,7 +12,7 @@ In this work, we introduce **IR-GeoDiff**, a latent diffusion model that recover
 
 ## Installation
 
-Downloading preprocessed data from zendo: 
+Downloading preprocessed data from Zendo: 
 ```
 wget -O data.zip "https://zenodo.org/records/22710667/files/data.zip?download=1"
 
@@ -44,7 +44,7 @@ python -m src.train_spec_2_fg_cls \
     --n_epochs 100 \
     --batch_size 256 \
     --lr 0.8 \
-    --warmup 1000 \
+    --warmup_steps 1000 \
     --seed 42 \
     --data_dir ../data/qm9s/
 ```
@@ -77,15 +77,15 @@ python -m src.train_diff \
     --use_edge True \
     --in_edge_nf 16 \
     --use_formula True \
-    --vae_dir_path ../exp/exp_ae/qm9s_ae \
+    --vae_dir_path ../exp/exp_ae/qm9s_ae 
 ```
 
 ## Sampling on QM9S
-Downloading checkpoint from zendo: 
+Downloading checkpoint from Zendo: 
 ```
 cd ../
 
-wget -O exp.zip https://zenodo.org/records/22802880/files/exp.zip?download=1
+wget -O exp.zip "https://zenodo.org/records/22802880/files/exp.zip?download=1"
 
 unzip exp.zip
 ```
@@ -112,22 +112,24 @@ python -m src.sample_diff \
 python -m src.code.sample_result_analysis.structural_analysis \
     --log_name graph_sim.log \
     --test_data ../data/qm9s/fg20_qm9s_final_test_1000.pkl \
-    --sample_file path/to/sampling/.npz file
+    --sample_file path/to/sample_final_xxx.npz \
+    --dataset qm9s 
 ```
 
 **Step 2**: Preparing Gaussian calculation
 ```
 python -m src.code.sample_result_analysis.generate_gaussian_input \
-    --data_file path/to/sampling/.npz file \
+    --data_file path/to/sample_final_xxx.npz \
     --structral_analysis_result path/to/graph_sim.csv \
     --save_dir ../exp/exp_diff/qm9s_diff/gjf_input \
+    --dataset qm9s \
     --NProcShared 16 \
     --num_mol_compute 1000 
 ```
 
-**Step 3**: Calculating spectral similarity
+**Step 3**: Calculating spectral similarity after Gaussian 16 optimization and frequency analysis.
 ```
-python -m src.code.sample_result_analysis.spec_analysis_match \
+python -m src.code.analysis.spec_analysis_match \
     --cal_sis \
     --all_stable \
     --structral_analysis_result path/to/graph_sim.csv \
@@ -135,6 +137,10 @@ python -m src.code.sample_result_analysis.spec_analysis_match \
     --test_data ../data/qm9s/fg20_qm9s_final_test_1000.pkl \
     --dataset qm9s \
     --num_mol 1000
+
+python -m src.code.analysis.spec_analysis_match \
+    --log_file_name  spec_sim.log \
+    --cal_sis_result path/to/ir_computed_sis_1000.pkl \
 ```
 
 ## Citation

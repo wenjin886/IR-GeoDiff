@@ -12,10 +12,10 @@ dependencies:
   - pytorch-cuda=12.1
   - mkl=2023.1.0
   - rdkit=2024.03.6
+  - networkx=3.4.2
   - pip
   - pip:
       - lightning==2.4.0
-      - pytorch-lightning==2.4.0
       - numpy==1.26.3
       - pandas==2.3.0
       - scipy==1.14.1
