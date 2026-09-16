@@ -55,7 +55,8 @@ def sample_ff(spec, one_hot, charges, node_mask, edge_mask,
     batch_size, max_n_nodes, _ = node_mask.shape
     h = {'categorical': one_hot, 'integer': charges}
     
-    x_all_sampled = torch.zeros(batch_size, sample_times, max_n_nodes, 3)
+    x_all_sampled = torch.zeros(
+        batch_size, sample_times, max_n_nodes, 3, device=node_mask.device)
     for i in tqdm(range(sample_times), desc="sample_times"):
         x = generative_model.sample(spec=spec,
                                     h = h,
@@ -153,6 +154,8 @@ def main(args):
                                                                  last_checkpoint=args.last_checkpoint,
                                                                  checkpoint=args.checkpoint,
                                                                  use_full_cls=args.use_full_cls)
+    diff_model = diff_model.to(device)
+    diff_model.eval()
 
     pos_pred_list = []
     pos_tgt_list = []
@@ -192,7 +195,7 @@ def main(args):
                 one_hot.to(device, dtype), 
                 charges.to(device, dtype),
                 node_mask, edge_mask, 
-                generative_model=diff_model.to(device), 
+                generative_model=diff_model, 
                 formula_ids=formula)
                                  
         else:
@@ -200,7 +203,7 @@ def main(args):
                 spec, one_hot.to(device, dtype), 
                 charges.to(device, dtype),
                 node_mask, edge_mask, 
-                generative_model=diff_model.to(device), 
+                generative_model=diff_model, 
                 fix_noise=False,
                 sample_mode=args.sample_mode,
                 sample_times=args.sample_times,
