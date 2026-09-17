@@ -12,6 +12,7 @@ In this work, we introduce **IR-GeoDiff**, a latent diffusion model that recover
 <p align="center">
   <img src="./materials/fig/model_no_fg.png" width="700" />
 </p>
+
 ## Installation
 
 Downloading preprocessed data from Zendo: 
