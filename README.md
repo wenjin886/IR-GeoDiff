@@ -29,7 +29,7 @@ git clone https://github.com/wenjin886/IR-GeoDiff.git
 cd IR-GeoDiff
 ```
 
-create a conda environment and install dependencies:
+Create a conda environment and install dependencies:
 ```
 conda env create -f environment.yml
 
