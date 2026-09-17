@@ -341,12 +341,13 @@ def main_ir_sis(args):
 
         # break
     ir_compute_df = pd.DataFrame(ir_compute_dic)
-    file_name = os.path.join(ir_compute_dir, f"ir_computed_sis_{num_mol}.pkl")
+    save_dir = os.path.dirname(ir_compute_dir)
+    file_name = os.path.join(save_dir, f"ir_computed_sis_{num_mol}.pkl")
     ir_compute_df.to_pickle(file_name)
-    print(ir_compute_df)
+    # print(ir_compute_df)
     print(f'Done. ir_compute_df is saved to {file_name}')
     compute_df = ir_compute_df.drop(columns=['ir'])
-    compute_df.to_csv(os.path.join(ir_compute_dir, f"computed_sis_{num_mol}.csv"))
+    compute_df.to_csv(os.path.join(save_dir, f"computed_sis_{num_mol}.csv"))
 
 
 def compute_mean_max_sis(spec_sis_df):
@@ -380,8 +381,12 @@ def main_analyze_sis(args):
     spec_sis_df = pd.read_pickle(args.cal_sis_result)
     save_path = os.path.dirname(args.cal_sis_result)
     
-    if args.log_file_name == '': log_file_name='spectral_analysis.log'
-    elif '.log' not in args.log_file_name: log_file_name = args.log_file_name + '.log'
+    if args.log_file_name == '': 
+        log_file_name='spectral_analysis.log'
+    elif '.log' not in args.log_file_name: 
+        log_file_name = args.log_file_name + '.log'
+    else:
+        log_file_name = args.log_file_name
 
     log_file_name = os.path.join(save_path, log_file_name)
     print(f"Log file: {log_file_name}")
@@ -464,27 +469,6 @@ def analyze_sis(spec_sis_df, logger):
         "sis_sample_mean_stable": sis_sample_mean_stable, "sis_func_sample_mean_stable": sis_func_sample_mean_stable
     }
 
-# def main_analyze_sis_report(args):
-#     spec_sis_df = pd.read_pickle(args.cal_sis_result)
-#     save_path = os.path.dirname(args.cal_sis_result)
-    
-#     if args.log_file_name == '': log_file_name='spectral_analysis.log'
-#     elif '.log' not in args.log_file_name: log_file_name = args.log_file_name + '.log'
-
-#     log_file_name = os.path.join(save_path, log_file_name)
-#     print(f"Log file: {log_file_name}")
-#     logging.basicConfig(filename=log_file_name,
-#                         format='%(asctime)s - %(levelname)s: %(message)s',
-#                         level=logging.INFO)
-#     logger = logging.getLogger(__name__)
-#     logger.info(f"Analyzing sample results: {args.cal_sis_result}")
-
-#     if type(args.num_mol) == int:
-#         logger.info(f"Number of test data: {args.num_mol}")
-#         spec_sis_df = spec_sis_df[spec_sis_df["mol_idx"].isin([i for i in range(args.num_mol)])]
-
-
-    
 
 
 
@@ -493,13 +477,12 @@ if __name__ == "__main__":
     
 
     parser.add_argument('--cal_sis', action="store_true")
-    # parser.add_argument('--only_stable_logs', action="store_true")
     parser.add_argument('--all_stable', action="store_true")
     parser.add_argument('--structral_analysis_result', type=str, help=".csv file")
     parser.add_argument('--ir_compute_dir', type=str, help="directory")
     parser.add_argument('--test_data', type=str, help=".pkl file")
 
-    parser.add_argument('--num_mol', type=eval, default=None)
+    parser.add_argument('--num_mol', type=eval, default=1000)
     parser.add_argument('--start_mol', type=int, default=-1)
     parser.add_argument('--end_mol', type=int, default=-1)
 
@@ -516,6 +499,5 @@ if __name__ == "__main__":
     if args.cal_sis:
         main_ir_sis(args)
     elif args.cal_sis_result != '':
-        # main_analyze_sis_report(args)
         main_analyze_sis(args)
 
