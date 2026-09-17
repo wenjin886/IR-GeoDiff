@@ -8,8 +8,10 @@ This repository contains the implementation accompanying "[Latent Diffusion-Base
 Infrared (IR) spectroscopy, a type of vibrational spectroscopy, is widely used for molecular structure determination and provides critical structural information for chemists. However, existing approaches for recovering molecular structures from IR spectra typically rely on one-dimensional SMILES strings or two-dimensional molecular graphs, which fail to capture the intricate relationship between spectral features and three-dimensional molecular geometry. Recent advances in diffusion models have greatly enhanced the ability to generate molecular structures in 3D space. Yet, no existing model has explored the distribution of 3D molecular geometries corresponding to a single IR spectrum. 
 In this work, we introduce **IR-GeoDiff**, a latent diffusion model that recovers 3D molecular geometries from IR spectra by integrating spectral information into both node and edge representations of molecular structures. We evaluate IR-GeoDiff from both spectral and structural perspectives, demonstrating its ability to recover the conditional distribution of molecular geometries corresponding to a given IR spectrum. We further characterise this recovered distribution in terms of configuration-level diversity and conformational consistency. To investigate how spectral information guides the recovery process, an attention-based analysis reveals that the model focuses on characteristic functional-group regions in IR spectra, providing insight into the proposed framework and showing qualitative consistency with common chemical interpretation practices.
 
-<img src="./materials/fig/model_no_fg.png" width="600" />
 
+<p align="center">
+  <img src="./materials/fig/model_no_fg.png" width="700" />
+</p>
 ## Installation
 
 Downloading preprocessed data from Zendo: 
